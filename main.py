@@ -8,6 +8,7 @@ from datetime import datetime, timezone
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from utils import verify_hcaptcha
 from dotenv import load_dotenv
 import requests
 
@@ -45,6 +46,13 @@ def contact():
     email = request.values.get("email")
     subject = request.values.get("subject")
     message = request.values.get("message")
+    hcaptcha_token = request.values.get("h-captcha-response")
+
+    if not hcaptcha_token:
+        return jsonify({"error": "hCaptcha token is required"}), 400
+
+    if not verify_hcaptcha(hcaptcha_token):
+        return jsonify({"error": "hCaptcha verification failed"}), 400
 
     if not email or not message or not subject:
         return jsonify({"error": "Email, Subject and message are required"}), 400
@@ -67,6 +75,7 @@ def contact():
 @app.errorhandler(429)
 def ratelimit_handler(e):
     return jsonify({"error": f"{e}"}), 429
+
 
 @app.route("/health", methods=["GET"])
 @limiter.exempt
