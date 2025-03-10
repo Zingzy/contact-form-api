@@ -1,0 +1,21 @@
+[server]
+host = "0.0.0.0"
+port = 8000
+debug = true
+
+[ratelimit]
+day_limit = 20
+hour_limit = 10
+minute_limit = 3
+
+[webhook]
+uri = "${WEBHOOK_URI}"  # Will be replaced with env var
+
+[validation]
+email_regex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+
+[logging]
+console_level = "INFO"
+file_path = "logs/api.log"
+file_rotation = "10 MB"
+file_retention = "7 days"
